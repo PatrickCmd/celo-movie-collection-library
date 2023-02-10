@@ -5,6 +5,7 @@ import movieLibraryAbi from '../contract/movie_library.abi.json';
 
 const ERC20_DECIMALS = 18;
 const MPContractAddress = "0x61436575Fc27bbEf8414198EeD91348593BeAF21"
+const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 
 let kit;
 let contract;
@@ -47,6 +48,15 @@ const connectCeloWallet = async function () {
         notification("⚠️ Please install the CeloExtensionWallet.")
     }
 }
+
+async function approve(_price) {
+    const cUSDContract = new kit.web3.eth.Contract(erc20Abi, cUSDContractAddress)
+  
+    const result = await cUSDContract.methods
+      .approve(MPContractAddress, _price)
+      .send({ from: kit.defaultAccount })
+    return result
+  }
   
 const getBalance = async function () {
     const totalBalance = await kit.getTotalBalance(kit.defaultAccount)
@@ -89,7 +99,7 @@ const getMovies = async function () {
                 image: m[3],
                 year: m[4],
                 views: m[5],
-                view_price: m[6],
+                view_price: new BigNumber(m[6]),
                 content_rating: await getMovieContentRating(i),
                 user_reviews: await getMovieUserReviews(i),
                 imbd_score: await getMovieImbdScore(i),
@@ -145,7 +155,7 @@ function movieTemplate(_movie) {
             <a class="btn btn-lg btn-outline-dark viewBtn fs-6 p-3" id=${
                 _movie.index
             }>
-                View for ${_movie.view_price} cUSD
+                View for ${_movie.view_price.shiftedBy(-ERC20_DECIMALS).toFixed(2)} cUSD
             </a>
             </div>
         </div>
@@ -217,11 +227,26 @@ document
         getMovies()
     })
 
-document.querySelector("#movielibrary").addEventListener("click", (e) => {
-    if(e.target.className.includes("viewBtn")) {
-        const index = e.target.id
-        movies[index].views++
+
+document.querySelector("#movielibrary").addEventListener("click", async (e) => {
+    if (e.target.className.includes("viewBtn")) {
+      const index = e.target.id
+      notification("⌛ Waiting for payment approval...")
+      try {
+        await approve(movies[index].view_price)
+      } catch (error) {
+        notification(`⚠️ ${error}.`)
+      }
+      notification(`⌛ Awaiting payment for "${movies[index].title}"...`)
+      try {
+        const result = await contract.methods
+          .viewMovie(index)
+          .send({ from: kit.defaultAccount })
         notification(`🎉 You successfully viewed "${movies[index].title}".`)
-        renderMovies()
+        getMovies()
+        getBalance()
+      } catch (error) {
+        notification(`⚠️ ${error}.`)
+      }
     }
-})
+})  
