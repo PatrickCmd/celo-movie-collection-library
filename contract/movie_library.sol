@@ -14,6 +14,8 @@ interface IERC20Token {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
+// Added NatSpec comments
+
 /* Movie Database
 owner
 title
@@ -30,37 +32,50 @@ view_price
 country
 */
 
+/// @title A movie library
+/// @author (your name here)
 contract MovieLibrary {
 
-    uint internal moviesLength = 0;
+    uint public moviesLength = 0; // Changed the visibility to public to be able to access its value from the frontend
     address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
 
+    // Chnaged the variable naming convention to mixedCase(camel case)
     struct Movie {
         address payable owner;
         string title;
         string genres;
         string image;
-        string movie_imbd_link;
-        string content_rating;
+        string movieImbdLink;
+        string contentRating;
         uint year;
-        uint imbd_score;
-        uint user_reviews;
+        uint imbdScore;
+        uint userReviews;
         uint views;
-        uint view_price;
+        uint viewPrice;
     }
 
-    mapping (uint => Movie) internal movies;
+    mapping (uint => Movie) internal movies; // Changed the visibility of the movies mapping to be able to access Movie structs stored in the mapping
 
+    /// @notice Saves a movie, stores it in the movies mapping
+    /// @param _title The title of the movie
+    /// @param _genres The movie genre
+    /// @param _image The movie image
+    /// @param _movieImbdLink The movie IMBD link
+    /// @param _contentRating The movie content rating
+    /// @param _year The movie year
+    /// @param _imbdScore The movie IMBD score
+    /// @param _userReviews The movie user rating
+    /// @param _viewPrice The movie viewing price
     function writeMovie(
         string memory _title,
         string memory _genres,
         string memory _image,
-        string memory _movie_imbd_link,
-        string memory _content_rating,
+        string memory _movieImbdLink,
+        string memory _contentRating,
         uint _year,
-        uint _imbd_score,
-        uint _user_reviews,
-        uint _view_price
+        uint _imbdScore,
+        uint _userReviews,
+        uint _viewPrice
     ) public {
         uint _views = 0;
         movies[moviesLength] = Movie(
@@ -68,66 +83,39 @@ contract MovieLibrary {
             _title,
             _genres,
             _image,
-            _movie_imbd_link,
-            _content_rating,
+            _movieImbdLink,
+            _contentRating,
             _year,
-            _imbd_score,
-            _user_reviews,
+            _imbdScore,
+            _userReviews,
             _views,
-            _view_price
+            _viewPrice
         );
         moviesLength++;
     }
 
-    function readMovie(uint _index) public view returns (
-        address payable,
-        string memory,
-        string memory,
-        string memory,
-        uint,
-        uint,
-        uint
-    ) {
-        return (
-            movies[_index].owner,
-            movies[_index].title,
-            movies[_index].genres,
-            movies[_index].image,
-            movies[_index].year,
-            movies[_index].views,
-            movies[_index].view_price
-        );
+    /// @notice Get a movie stored in the movies mapping, 
+    /// @param _index The index of the movie
+    /// @return A movie
+    function readMovie(uint _index) public view returns (Movie memory) {
+        return movies[_index]; // Chnaged the return statement to be able to access all the stored properties
     }
 
+    /// @notice View a movie, sends the view price of the movie to the movie owner, 
+    /// @param _index The index of the movie to be viewed
     function viewMovie(uint _index) public payable  {
         require(
           IERC20Token(cUsdTokenAddress).transferFrom(
             msg.sender,
             movies[_index].owner,
-            movies[_index].view_price
+            movies[_index].viewPrice
           ),
           "Transfer failed."
         );
         movies[_index].views++;
     }
 
-    function getMoviesLength() public view returns (uint) {
-        return (moviesLength);
-    }
-
-    function getMovieUserReviews(uint _index) public view returns (uint) {
-        return (movies[_index].user_reviews);
-    }
-
-    function getMovieImbdScore(uint _index) public view returns (uint) {
-        return (movies[_index].imbd_score);
-    }
-
-    function getMovieContentRating(uint _index) public view returns (string memory) {
-        return (movies[_index].content_rating);
-    }
-
-    function getMovieImbdLink(uint _index) public view returns (string memory) {
-        return (movies[_index].movie_imbd_link);
-    }
+// Removed the getMoviesLength function as it can be accessed from the moviesLength variable
+// Removed the getMovieUserReviews, getMovieImbdScore, getMovieContentRating, getMovieImbdLink functions
+// as the values they return can be accessed from the readMovies function
 }

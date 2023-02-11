@@ -5,7 +5,8 @@ import movieLibraryAbi from '../contract/movie_library.abi.json';
 import erc20Abi from "../contract/erc20.abi.json"
 
 const ERC20_DECIMALS = 18;
-const MVContractAddress = "0x61436575Fc27bbEf8414198EeD91348593BeAF21"
+// const MVContractAddress = "0x61436575Fc27bbEf8414198EeD91348593BeAF21"
+const MVContractAddress = "0x587FE3C5d2678755af5C4935d15E22CfA609e7C7";
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 
 let kit;
@@ -66,27 +67,31 @@ const getBalance = async function () {
 }
 
 const getMovieContentRating = async function (index) {
-    const rating = await contract.methods.getMovieContentRating(index).call()
+    const movieData = await contract.methods.readMovie(index).call()
+    const rating = await movieData.contentRating
     return rating
 }
 
 const getMovieUserReviews = async function (index) {
-    const user_reviews = await contract.methods.getMovieUserReviews(index).call()
+    const movieData = await contract.methods.readMovie(index).call()
+    const user_reviews = await movieData.userReviews
     return user_reviews
 }
 
 const getMovieImbdScore = async function (index) {
-    const imbd_score = await contract.methods.getMovieImbdScore(index).call()
+    const movieData = await contract.methods.readMovie(index).call()
+    const imbd_score = await movieData.imbdScore;
     return imbd_score
 }
 
 const getMovieImbdLink = async function (index) {
-    const imbd_link = await contract.methods.getMovieImbdLink(index).call()
+    const movieData = await contract.methods.readMovie(index).call()
+    const imbd_link = await movieData.movieImbdLink;
     return imbd_link
 }
 
 const getMovies = async function () {
-    const _moviesLength = await contract.methods.getMoviesLength().call()
+    const _moviesLength = await contract.methods.moviesLength().call()
     const _movies = []
 
     for (let i = 0; i < _moviesLength; i++) {
@@ -98,9 +103,9 @@ const getMovies = async function () {
                 title: m[1],
                 genres: m[2],
                 image: m[3],
-                year: m[4],
-                views: m[5],
-                view_price: new BigNumber(m[6]),
+                year: m[6],
+                views: m[9],
+                view_price: new BigNumber(m[10]),
                 content_rating: await getMovieContentRating(i),
                 user_reviews: await getMovieUserReviews(i),
                 imbd_score: await getMovieImbdScore(i),
@@ -231,22 +236,27 @@ document
 document.querySelector("#movielibrary").addEventListener("click", async (e) => {
     if (e.target.className.includes("viewBtn")) {
         const index = e.target.id
-        notification("⌛ Waiting for payment approval...")
-        try {
-            await approve(movies[index].view_price)
-        } catch (error) {
-            notification(`⚠️ ${error}.`)
+        if(movies[index].owner !== kit.defaultAccount) {
+            notification("⌛ Waiting for payment approval...")
+            try {
+                await approve(movies[index].view_price)
+            } catch (error) {
+                notification(`⚠️ ${error}.`)
+            }
+            notification(`⌛ Awaiting payment for "${movies[index].title}"...`)
+            try {
+                const result = await contract.methods
+                    .viewMovie(index)
+                    .send({ from: kit.defaultAccount })
+                notification(`🎉 You successfully viewed "${movies[index].title}".`)
+                getMovies()
+                getBalance()
+            } catch (error) {
+                notification(`⚠️ ${error}.`)
+            }
         }
-        notification(`⌛ Awaiting payment for "${movies[index].title}"...`)
-        try {
-            const result = await contract.methods
-                .viewMovie(index)
-                .send({ from: kit.defaultAccount })
-            notification(`🎉 You successfully viewed "${movies[index].title}".`)
-            getMovies()
-            getBalance()
-        } catch (error) {
-            notification(`⚠️ ${error}.`)
+        else {
+            notification("Owner can't view their own movie");
         }
     }
 })  
