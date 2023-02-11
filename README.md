@@ -33,6 +33,17 @@ This is a very simple movie collection library dapp where users can:
 
 ## Project Setup
 
+### Clone project
+```
+https://github.com/PatrickCmd/celo-movie-collection-library.git
+```
+
+### Change to project folder
+```
+cd celo-movie-collection-librar
+```
+
+
 ### Install
 ```
 npm install
