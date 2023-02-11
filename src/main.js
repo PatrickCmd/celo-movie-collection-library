@@ -144,7 +144,7 @@ function movieTemplate(_movie) {
             <br>
             <strong>User Reviews</strong>: ${_movie.user_reviews}
             <br>
-            Follow movie IMBD link to see movie trailor: 
+            Follow movie IMBD link to see movie trailer: 
             <a target="_blank" href="${_movie.imbd_link}">IMBD Link</a> 
             <br>
             </p>

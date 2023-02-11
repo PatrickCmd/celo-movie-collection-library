@@ -12,7 +12,7 @@ This is a very simple movie collection library dapp where users can:
 * Add your own movies to the dapp
 * See movies Imbd score and content rating
 * Share IMBD trailor links for the movies they have watched
-* See movie trailors by following the IMBD link of the movie
+* See movie trailers by following the IMBD link of the movie
 
 ## Live Demo
 [MovieLibrary Dapp](https://patrickcmd.github.io/celo-movie-collection-library/)
