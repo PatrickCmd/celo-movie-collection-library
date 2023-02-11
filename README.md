@@ -15,7 +15,7 @@ This is a very simple movie collection library dapp where users can:
 * See movie trailors by following the IMBD link of the movie
 
 ## Live Demo
-[MovieLibrary Dapp](https://dacadeorg.github.io/celo-marketplace-dapp/)
+[MovieLibrary Dapp](https://patrickcmd.github.io/celo-movie-collection-library/)
 
 ## Usage
 
@@ -49,4 +49,4 @@ npm run build
 ```
 
 ## Live Sit
-The site is live at Github Pages [here](https://patrickcmd.github.io/celo-development-101-marketplace/)
+The site is live at Github Pages [here](https://patrickcmd.github.io/celo-movie-collection-library/)
