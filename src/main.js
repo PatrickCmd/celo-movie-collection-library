@@ -2,9 +2,11 @@ import Web3 from 'web3';
 import { newKitFromWeb3 } from '@celo/contractkit';
 import BigNumber from 'bignumber.js';
 import movieLibraryAbi from '../contract/movie_library.abi.json';
+import erc20Abi from "../contract/erc20.abi.json"
 
 const ERC20_DECIMALS = 18;
-const MPContractAddress = "0x61436575Fc27bbEf8414198EeD91348593BeAF21"
+const MVContractAddress = "0x61436575Fc27bbEf8414198EeD91348593BeAF21"
+const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 
 let kit;
 let contract;
@@ -39,7 +41,7 @@ const connectCeloWallet = async function () {
             const accounts = await kit.web3.eth.getAccounts()
             kit.defaultAccount = accounts[0]
 
-            contract = new kit.web3.eth.Contract(movieLibraryAbi, MPContractAddress)
+            contract = new kit.web3.eth.Contract(movieLibraryAbi, MVContractAddress)
         } catch (error) {
             notification(`⚠️ ${error}.`)
         }
@@ -47,29 +49,38 @@ const connectCeloWallet = async function () {
         notification("⚠️ Please install the CeloExtensionWallet.")
     }
 }
-  
+
+async function approve(_price) {
+    const cUSDContract = new kit.web3.eth.Contract(erc20Abi, cUSDContractAddress)
+
+    const result = await cUSDContract.methods
+        .approve(MVContractAddress, _price)
+        .send({ from: kit.defaultAccount })
+    return result
+}
+
 const getBalance = async function () {
     const totalBalance = await kit.getTotalBalance(kit.defaultAccount)
     const cUSDBalance = totalBalance.cUSD.shiftedBy(-ERC20_DECIMALS).toFixed(2)
     document.querySelector("#balance").textContent = cUSDBalance
 }
 
-const getMovieContentRating = async function(index) {
+const getMovieContentRating = async function (index) {
     const rating = await contract.methods.getMovieContentRating(index).call()
     return rating
 }
 
-const getMovieUserReviews = async function(index) {
+const getMovieUserReviews = async function (index) {
     const user_reviews = await contract.methods.getMovieUserReviews(index).call()
     return user_reviews
 }
 
-const getMovieImbdScore = async function(index) {
+const getMovieImbdScore = async function (index) {
     const imbd_score = await contract.methods.getMovieImbdScore(index).call()
     return imbd_score
 }
 
-const getMovieImbdLink = async function(index) {
+const getMovieImbdLink = async function (index) {
     const imbd_link = await contract.methods.getMovieImbdLink(index).call()
     return imbd_link
 }
@@ -89,7 +100,7 @@ const getMovies = async function () {
                 image: m[3],
                 year: m[4],
                 views: m[5],
-                view_price: m[6],
+                view_price: new BigNumber(m[6]),
                 content_rating: await getMovieContentRating(i),
                 user_reviews: await getMovieUserReviews(i),
                 imbd_score: await getMovieImbdScore(i),
@@ -142,10 +153,9 @@ function movieTemplate(_movie) {
             <span>${_movie.genres}</span>
             </p>
             <div class="d-grid gap-2">
-            <a class="btn btn-lg btn-outline-dark viewBtn fs-6 p-3" id=${
-                _movie.index
-            }>
-                View for ${_movie.view_price} cUSD
+            <a class="btn btn-lg btn-outline-dark viewBtn fs-6 p-3" id=${_movie.index
+        }>
+                View for ${_movie.view_price.shiftedBy(-ERC20_DECIMALS).toFixed(2)} cUSD
             </a>
             </div>
         </div>
@@ -156,9 +166,9 @@ function movieTemplate(_movie) {
 function identiconTemplate(_address) {
     const icon = blockies
         .create({
-        seed: _address,
-        size: 8,
-        scale: 16,
+            seed: _address,
+            size: 8,
+            scale: 16,
         })
         .toDataURL()
 
@@ -202,14 +212,14 @@ document
             document.getElementById("newMovieImbdScore").value,
             document.getElementById("newMovieUserReviews").value,
             new BigNumber(document.getElementById("newMovieViewPrice").value)
-            .shiftedBy(ERC20_DECIMALS)
-            .toString()
+                .shiftedBy(ERC20_DECIMALS)
+                .toString()
         ]
         notification(`⌛ Adding "${params[0]}"...`)
         try {
             const result = await contract.methods
-            .writeMovie(...params)
-            .send({ from: kit.defaultAccount })
+                .writeMovie(...params)
+                .send({ from: kit.defaultAccount })
         } catch (error) {
             notification(`⚠️ ${error}.`)
         }
@@ -217,11 +227,26 @@ document
         getMovies()
     })
 
-document.querySelector("#movielibrary").addEventListener("click", (e) => {
-    if(e.target.className.includes("viewBtn")) {
+
+document.querySelector("#movielibrary").addEventListener("click", async (e) => {
+    if (e.target.className.includes("viewBtn")) {
         const index = e.target.id
-        movies[index].views++
-        notification(`🎉 You successfully viewed "${movies[index].title}".`)
-        renderMovies()
+        notification("⌛ Waiting for payment approval...")
+        try {
+            await approve(movies[index].view_price)
+        } catch (error) {
+            notification(`⚠️ ${error}.`)
+        }
+        notification(`⌛ Awaiting payment for "${movies[index].title}"...`)
+        try {
+            const result = await contract.methods
+                .viewMovie(index)
+                .send({ from: kit.defaultAccount })
+            notification(`🎉 You successfully viewed "${movies[index].title}".`)
+            getMovies()
+            getBalance()
+        } catch (error) {
+            notification(`⚠️ ${error}.`)
+        }
     }
-})
+})  
