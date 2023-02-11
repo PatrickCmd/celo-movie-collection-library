@@ -40,7 +40,7 @@ https://github.com/PatrickCmd/celo-movie-collection-library.git
 
 ### Change to project folder
 ```
-cd celo-movie-collection-librar
+cd celo-movie-collection-library
 ```
 
 
