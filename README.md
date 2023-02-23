@@ -13,6 +13,7 @@ This is a very simple movie collection library dapp where users can:
 * See movies Imbd score and content rating
 * Share IMBD trailor links for the movies they have watched
 * See movie trailers by following the IMBD link of the movie
+* Delete a movie you have added to blockchain.
 
 ## Live Demo
 [MovieLibrary Dapp](https://patrickcmd.github.io/celo-movie-collection-library/)
