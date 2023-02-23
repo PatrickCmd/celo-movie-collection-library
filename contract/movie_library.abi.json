@@ -1,157 +1,314 @@
 [
-	{
-		"inputs": [],
-		"name": "moviesLength",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_index",
-				"type": "uint256"
-			}
-		],
-		"name": "readMovie",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address payable",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "title",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "genres",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "image",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "movieImbdLink",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "contentRating",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "year",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "imbdScore",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "userReviews",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "views",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "viewPrice",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct MovieLibrary.Movie",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_index",
-				"type": "uint256"
-			}
-		],
-		"name": "viewMovie",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_title",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_genres",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_image",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_movieImbdLink",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_contentRating",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_year",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_imbdScore",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_userReviews",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_viewPrice",
-				"type": "uint256"
-			}
-		],
-		"name": "writeMovie",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_index",
+                "type": "uint256"
+            }
+        ],
+        "name": "deleteMovie",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getMyPaidMovies",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address payable",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "genres",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "image",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "movieImbdLink",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "contentRating",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "year",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "imbdScore",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "userReviews",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "views",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "viewPrice",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct MovieLibrary.Movie[]",
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "moviesLength",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "myPaidMovies",
+        "outputs": [
+            {
+                "internalType": "address payable",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "title",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "genres",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "image",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "movieImbdLink",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "contentRating",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "year",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "imbdScore",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "userReviews",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "views",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "viewPrice",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_index",
+                "type": "uint256"
+            }
+        ],
+        "name": "readMovie",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address payable",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "genres",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "image",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "movieImbdLink",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "contentRating",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "year",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "imbdScore",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "userReviews",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "views",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "viewPrice",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct MovieLibrary.Movie",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_index",
+                "type": "uint256"
+            }
+        ],
+        "name": "viewMovie",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_title",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_genres",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_image",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_movieImbdLink",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_contentRating",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_year",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_imbdScore",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_userReviews",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_viewPrice",
+                "type": "uint256"
+            }
+        ],
+        "name": "writeMovie",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
 ]
