@@ -5,9 +5,8 @@ import movieLibraryAbi from '../contract/movie_library.abi.json';
 import erc20Abi from "../contract/erc20.abi.json"
 
 const ERC20_DECIMALS = 18;
-// const MVContractAddress = "0x61436575Fc27bbEf8414198EeD91348593BeAF21"
-const MVContractAddress = "0x587FE3C5d2678755af5C4935d15E22CfA609e7C7";
-const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
+const MVContractAddress = "0x8E629C05676bc3EE83df3271E23b7a34F5720Fc5";
+const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 let kit;
 let contract;
@@ -16,14 +15,14 @@ let contract;
     title: "Spider-Man 3",
     genres: `Action|Adventure|Romance`,
     image: "https://rukminim1.flixcart.com/image/832/832/kbgu1e80/physical-game/v/j/u/spider-man-game-spider-man-3-action-adventure-fighting-shooting-original-imafssfnxtfgtfcn.jpeg?q=70",
-    imbd_link: "http://www.imdb.com/title/tt0413300/?ref_=fn_tt_tt_1",
-    content_rating: "PG-13",
+    movieImbdLink: "http://www.imdb.com/title/tt0413300/?ref_=fn_tt_tt_1",
+    contentRating: "PG-13",
     owner: "0x32Be343B94f860124dC4fEe278FDCBD38C102D88",
     year: 2007,
-    imbd_score: 7,
-    view_price: 3,
+    imbdScore: 7,
+    viewPrice: 3,
     views: 27,
-    user_reviews: 1903,
+    userReviews: 1903,
     index: 0,
 }
 */
@@ -74,20 +73,20 @@ const getMovieContentRating = async function (index) {
 
 const getMovieUserReviews = async function (index) {
     const movieData = await contract.methods.readMovie(index).call()
-    const user_reviews = await movieData.userReviews
-    return user_reviews
+    const userReviews = await movieData.userReviews
+    return userReviews
 }
 
 const getMovieImbdScore = async function (index) {
     const movieData = await contract.methods.readMovie(index).call()
-    const imbd_score = await movieData.imbdScore;
-    return imbd_score
+    const imbdScore = await movieData.imbdScore;
+    return imbdScore
 }
 
 const getMovieImbdLink = async function (index) {
     const movieData = await contract.methods.readMovie(index).call()
-    const imbd_link = await movieData.movieImbdLink;
-    return imbd_link
+    const imbdLink = await movieData.movieImbdLink;
+    return imbdLink
 }
 
 const getMovies = async function () {
@@ -105,11 +104,11 @@ const getMovies = async function () {
                 image: m[3],
                 year: m[6],
                 views: m[9],
-                view_price: new BigNumber(m[10]),
-                content_rating: await getMovieContentRating(i),
-                user_reviews: await getMovieUserReviews(i),
-                imbd_score: await getMovieImbdScore(i),
-                imbd_link: await getMovieImbdLink(i)
+                viewPrice: new BigNumber(m[10]),
+                contentRating: await getMovieContentRating(i),
+                userReviews: await getMovieUserReviews(i),
+                imbdScore: await getMovieImbdScore(i),
+                movieImbdLink: await getMovieImbdLink(i)
             })
         })
         _movies.push(_movie)
@@ -141,16 +140,16 @@ function movieTemplate(_movie) {
             </div>
             <h2 class="card-title fs-4 fw-bold mt-2">${_movie.title}</h2>
             <p class="card-text mb-4" style="min-height: 82px">
-            <strong>Move IMBD Score</strong>: ${_movie.imbd_score}
+            <strong>Move IMBD Score</strong>: ${_movie.imbdScore}
             <br>
             <strong>Year released</strong>: ${_movie.year}
             <br>
-            <strong>Content rating</strong>: ${_movie.content_rating}
+            <strong>Content rating</strong>: ${_movie.contentRating}
             <br>
-            <strong>User Reviews</strong>: ${_movie.user_reviews}
+            <strong>User Reviews</strong>: ${_movie.userReviews}
             <br>
             Follow movie IMBD link to see movie trailer: 
-            <a target="_blank" href="${_movie.imbd_link}">IMBD Link</a> 
+            <a target="_blank" href="${_movie.movieImbdLink}">IMBD Link</a> 
             <br>
             </p>
             <p class="card-text mt-4">
@@ -160,8 +159,11 @@ function movieTemplate(_movie) {
             <div class="d-grid gap-2">
             <a class="btn btn-lg btn-outline-dark viewBtn fs-6 p-3" id=${_movie.index
         }>
-                View for ${_movie.view_price.shiftedBy(-ERC20_DECIMALS).toFixed(2)} cUSD
+                View for ${_movie.viewPrice.shiftedBy(-ERC20_DECIMALS).toFixed(2)} cUSD
             </a>
+            
+            <a class="btn btn-lg btn-outline-danger deleteBtn fs-6 p-3" id=${_movie.index
+        }>Delete Movie</a>
             </div>
         </div>
         </div>
@@ -194,6 +196,18 @@ function notification(_text) {
 
 function notificationOff() {
     document.querySelector(".alert").style.display = "none"
+}
+
+function clear() {
+    document.getElementById("newMovieTitle").value = ""
+    document.getElementById("newMovieGenres").value = "";
+    document.getElementById("newImgUrl").value = "";
+    document.getElementById("newImbdLink").value = "";
+    document.getElementById("newContentRating").value = "";
+    document.getElementById("newMovieYear").value = "";
+    document.getElementById("newMovieImbdScore").value = "";
+    document.getElementById("newMovieUserReviews").value = "";
+    document.getElementById("newMovieViewPrice").value = "";
 }
 
 window.addEventListener("load", async () => {
@@ -236,10 +250,10 @@ document
 document.querySelector("#movielibrary").addEventListener("click", async (e) => {
     if (e.target.className.includes("viewBtn")) {
         const index = e.target.id
-        if(movies[index].owner !== kit.defaultAccount) {
+        if (movies[index].owner !== kit.defaultAccount) {
             notification("⌛ Waiting for payment approval...")
             try {
-                await approve(movies[index].view_price)
+                await approve(movies[index].viewPrice)
             } catch (error) {
                 notification(`⚠️ ${error}.`)
             }
@@ -259,4 +273,31 @@ document.querySelector("#movielibrary").addEventListener("click", async (e) => {
             notification("Owner can't view their own movie");
         }
     }
-})  
+
+})
+
+document.querySelector("#movielibrary").addEventListener("click", async (e) => {
+    if (e.target.className.includes("deleteBtn")) {
+        const index = e.target.id
+        if (movies[index].owner === kit.defaultAccount) {
+            notification(`⚠️ You are deleting movie: "${movies[index].title}"...`)
+            try {
+                const result = await contract.methods
+                    .deleteMovie(index)
+                    .send({ from: kit.defaultAccount })
+                notification(`🎉 You successfully deleted "${movies[index].title}".`)
+                getMovies()
+            } catch (error) {
+                notification(`⚠️ ${error}.`)
+            }
+        }
+        else {
+            notification("Not authorized. You don't have permission to perform this action.");
+        }
+    }
+})
+
+document.querySelector("#addModal").addEventListener("hidden.bs.modal", function(e) {
+    clear()
+})
+ 

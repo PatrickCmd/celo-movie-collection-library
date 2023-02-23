@@ -14,8 +14,6 @@ interface IERC20Token {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-// Added NatSpec comments
-
 /* Movie Database
 owner
 title
@@ -33,13 +31,13 @@ country
 */
 
 /// @title A movie library
-/// @author (your name here)
+/// @author (Patrick Walukagga)
 contract MovieLibrary {
 
-    uint public moviesLength = 0; // Changed the visibility to public to be able to access its value from the frontend
+    uint public moviesLength = 0; // visibility is public to be able to access its value from the frontend
+    //cUSd token contract address
     address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
 
-    // Chnaged the variable naming convention to mixedCase(camel case)
     struct Movie {
         address payable owner;
         string title;
@@ -54,7 +52,11 @@ contract MovieLibrary {
         uint viewPrice;
     }
 
-    mapping (uint => Movie) internal movies; // Changed the visibility of the movies mapping to be able to access Movie structs stored in the mapping
+    // track all movies
+    mapping (uint => Movie) internal movies;
+
+    //track movies viewed by a specific address
+    mapping(address => Movie[]) public myPaidMovies;
 
     /// @notice Saves a movie, stores it in the movies mapping
     /// @param _title The title of the movie
@@ -77,6 +79,13 @@ contract MovieLibrary {
         uint _userReviews,
         uint _viewPrice
     ) public {
+        require(bytes(_title).length > 2, "Input is invalid");
+        require(bytes(_genres).length > 2, "Input is invalid");
+        require(bytes(_image).length > 5, "Input is invalid");
+        require(bytes(_movieImbdLink).length > 5, "Input is invalid");
+        require(bytes(_contentRating).length > 1, "Input is invalid");
+        require(_year > 0, "Input is invalid");
+        require(_viewPrice > 0, "Input is invalid");
         uint _views = 0;
         movies[moviesLength] = Movie(
             payable(msg.sender),
@@ -98,10 +107,11 @@ contract MovieLibrary {
     /// @param _index The index of the movie
     /// @return A movie
     function readMovie(uint _index) public view returns (Movie memory) {
-        return movies[_index]; // Chnaged the return statement to be able to access all the stored properties
+        return movies[_index];
     }
 
     /// @notice View a movie, sends the view price of the movie to the movie owner, 
+    /// @notice And appends the movies to the list of my viewed/paid movies
     /// @param _index The index of the movie to be viewed
     function viewMovie(uint _index) public payable  {
         require(
@@ -113,9 +123,19 @@ contract MovieLibrary {
           "Transfer failed."
         );
         movies[_index].views++;
+        myPaidMovies[msg.sender].push(movies[_index]);
     }
 
-// Removed the getMoviesLength function as it can be accessed from the moviesLength variable
-// Removed the getMovieUserReviews, getMovieImbdScore, getMovieContentRating, getMovieImbdLink functions
-// as the values they return can be accessed from the readMovies function
+    ///@notice A list of movies viewed by specific address
+    ///@return Movie[]
+    function getMyPaidMovies() public view returns(Movie[] memory){
+        return myPaidMovies[msg.sender];
+    }
+
+    ///@notice Delete a movie from the movies records
+    function deleteMovie(uint _index) public {
+        require(movies[_index].owner == msg.sender,"You are not authorized to perform this action");
+        delete movies[_index];
+        moviesLength--;
+    }
 }
