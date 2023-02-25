@@ -136,6 +136,5 @@ contract MovieLibrary {
     function deleteMovie(uint _index) public {
         require(movies[_index].owner == msg.sender,"You are not authorized to perform this action");
         delete movies[_index];
-        moviesLength--;
     }
 }

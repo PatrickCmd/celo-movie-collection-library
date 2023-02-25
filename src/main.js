@@ -5,7 +5,7 @@ import movieLibraryAbi from '../contract/movie_library.abi.json';
 import erc20Abi from "../contract/erc20.abi.json"
 
 const ERC20_DECIMALS = 18;
-const MVContractAddress = "0x8E629C05676bc3EE83df3271E23b7a34F5720Fc5";
+const MVContractAddress = "0xE675Fc97AbE1FC0728d1eb2f3D1535275fC50149";
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 let kit;
@@ -120,10 +120,12 @@ const getMovies = async function () {
 function renderMovies() {
     document.getElementById("movielibrary").innerHTML = ""
     movies.forEach((_movie) => {
-        const newDiv = document.createElement("div")
-        newDiv.className = "col-md-4"
-        newDiv.innerHTML = movieTemplate(_movie)
-        document.getElementById("movielibrary").appendChild(newDiv)
+        if (_movie.owner !== "0x0000000000000000000000000000000000000000") {
+            const newDiv = document.createElement("div")
+            newDiv.className = "col-md-4"
+            newDiv.innerHTML = movieTemplate(_movie)
+            document.getElementById("movielibrary").appendChild(newDiv)
+        }
     })
 }
 
